@@ -279,12 +279,26 @@ export const CollaborationsView: React.FC<CollaborationsViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/80">
-              {filteredCollaborations.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-950/60 transition-colors">
-                  <td className="py-2.5 px-3">
-                    <div className="font-semibold text-slate-100">{c.creator}</div>
-                    <div className="text-[11px] text-slate-400 font-mono">{c.handle}</div>
+              {filteredCollaborations.length === 0 ? (
+                <tr>
+                  <td colSpan={11} className="py-12 text-center text-slate-500">
+                    <UserCheck className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                    <p className="text-xs text-slate-400">No creators in CRM yet</p>
+                    <button
+                      onClick={onOpenNewCreatorModal}
+                      className="mt-2 text-xs font-semibold text-cyan-400 hover:underline inline-block"
+                    >
+                      + Add Your First Creator
+                    </button>
                   </td>
+                </tr>
+              ) : (
+                filteredCollaborations.map((c) => (
+                  <tr key={c.id} className="hover:bg-slate-950/60 transition-colors">
+                    <td className="py-2.5 px-3">
+                      <div className="font-semibold text-slate-100">{c.creator}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">{c.handle}</div>
+                    </td>
                   <td className="py-2.5 px-3 capitalize font-mono text-cyan-400">
                     {c.platform}
                   </td>
@@ -320,7 +334,7 @@ export const CollaborationsView: React.FC<CollaborationsViewProps> = ({
                     </button>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

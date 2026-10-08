@@ -23,11 +23,18 @@ interface SocialAccountsViewProps {
 export const SocialAccountsView: React.FC<SocialAccountsViewProps> = ({
   onOpenConnectModal,
 }) => {
-  const { socialAccounts, syncSocialAccount, syncingAccountId, disconnectSocialAccount } =
-    useArtist();
+  const {
+    socialAccounts,
+    syncSocialAccount,
+    syncingAccountId,
+    disconnectSocialAccount,
+    quickConnectAllStarterAccounts,
+  } = useArtist();
 
   const [showSchemaDrawer, setShowSchemaDrawer] = useState(false);
   const [selectedAccountForRaw, setSelectedAccountForRaw] = useState<string | null>(null);
+
+  const connectedCount = socialAccounts.filter((a) => a.status === 'connected').length;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -50,7 +57,17 @@ export const SocialAccountsView: React.FC<SocialAccountsViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {connectedCount === 0 && (
+            <button
+              onClick={quickConnectAllStarterAccounts}
+              title="Connect top 4 accounts with starter follower metrics for testing"
+              className="px-3 py-2 text-xs font-medium text-emerald-300 bg-emerald-950/80 border border-emerald-800 rounded-lg hover:bg-emerald-900 transition-colors flex items-center gap-1.5"
+            >
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Connect Core 4 Platforms</span>
+            </button>
+          )}
           <button
             onClick={() => setShowSchemaDrawer(!showSchemaDrawer)}
             className="px-3 py-2 text-xs font-medium text-slate-300 bg-slate-950 border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors flex items-center gap-1.5"
@@ -148,15 +165,24 @@ export const SocialAccountsView: React.FC<SocialAccountsViewProps> = ({
                           </span>
                         )}
                       </div>
-                      <a
-                        href={account.profileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[11px] text-slate-400 hover:text-cyan-400 flex items-center gap-1 truncate"
-                      >
-                        <span className="truncate">{account.handle}</span>
-                        <ExternalLink className="w-2.5 h-2.5 shrink-0" />
-                      </a>
+                      {account.handle ? (
+                        <a
+                          href={account.profileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[11px] text-slate-400 hover:text-cyan-400 flex items-center gap-1 truncate"
+                        >
+                          <span className="truncate">{account.handle}</span>
+                          <ExternalLink className="w-2.5 h-2.5 shrink-0" />
+                        </a>
+                      ) : (
+                        <button
+                          onClick={onOpenConnectModal}
+                          className="text-[11px] text-cyan-400 hover:underline text-left truncate"
+                        >
+                          + Click to authenticate & connect
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -238,18 +264,28 @@ export const SocialAccountsView: React.FC<SocialAccountsViewProps> = ({
                 </button>
 
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => syncSocialAccount(account.id)}
-                    disabled={isSyncing}
-                    className="px-2.5 py-1 text-xs font-medium text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-md transition-colors flex items-center gap-1 disabled:opacity-50"
-                  >
-                    <RefreshCw
-                      className={`w-3 h-3 text-cyan-400 ${
-                        isSyncing ? 'animate-spin' : ''
-                      }`}
-                    />
-                    <span>{isSyncing ? 'Syncing...' : 'Sync Now'}</span>
-                  </button>
+                  {account.status === 'connected' ? (
+                    <button
+                      onClick={() => syncSocialAccount(account.id)}
+                      disabled={isSyncing}
+                      className="px-2.5 py-1 text-xs font-medium text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-md transition-colors flex items-center gap-1 disabled:opacity-50"
+                    >
+                      <RefreshCw
+                        className={`w-3 h-3 text-cyan-400 ${
+                          isSyncing ? 'animate-spin' : ''
+                        }`}
+                      />
+                      <span>{isSyncing ? 'Syncing...' : 'Sync Now'}</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={onOpenConnectModal}
+                      className="px-2.5 py-1 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-md transition-colors flex items-center gap-1"
+                    >
+                      <Share2 className="w-3 h-3" />
+                      <span>Connect</span>
+                    </button>
+                  )}
                 </div>
               </div>
 

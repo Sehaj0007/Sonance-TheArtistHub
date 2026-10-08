@@ -25,8 +25,13 @@ interface ContentCalendarViewProps {
 export const ContentCalendarView: React.FC<ContentCalendarViewProps> = ({
   onOpenNewContentModal,
 }) => {
-  const { contentItems, updateContentStatus, updateContentApproval, deleteContentItem } =
-    useArtist();
+  const {
+    contentItems,
+    updateContentStatus,
+    updateContentApproval,
+    deleteContentItem,
+    quickSeedStarterPipeline,
+  } = useArtist();
 
   const [viewMode, setViewMode] = useState<'kanban' | 'calendar'>('kanban');
   const [platformFilter, setPlatformFilter] = useState<string>('all');
@@ -121,13 +126,24 @@ export const ContentCalendarView: React.FC<ContentCalendarViewProps> = ({
             ))}
           </div>
 
-          <button
-            onClick={onOpenNewContentModal}
-            className="px-3 py-1.5 text-xs font-medium text-slate-950 bg-cyan-400 hover:bg-cyan-300 font-semibold rounded-lg transition-colors flex items-center gap-1.5 ml-auto"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Item</span>
-          </button>
+          <div className="flex items-center gap-2 ml-auto">
+            {contentItems.length === 0 && (
+              <button
+                onClick={quickSeedStarterPipeline}
+                className="px-3 py-1.5 text-xs font-medium text-emerald-300 bg-emerald-950/80 border border-emerald-800 rounded-lg hover:bg-emerald-900 transition-colors flex items-center gap-1.5"
+                title="Seed 3 standard release promo posts (Acoustic take, Studio BTS, Visualizer)"
+              >
+                <span>+ Seed 3 Promo Posts</span>
+              </button>
+            )}
+            <button
+              onClick={onOpenNewContentModal}
+              className="px-3 py-1.5 text-xs font-medium text-slate-950 bg-cyan-400 hover:bg-cyan-300 font-semibold rounded-lg transition-colors flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Item</span>
+            </button>
+          </div>
         </div>
       </div>
 

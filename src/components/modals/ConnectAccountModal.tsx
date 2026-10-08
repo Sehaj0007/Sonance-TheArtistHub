@@ -24,9 +24,12 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
 }) => {
   const { connectSocialAccount, artistProfile } = useArtist();
 
+  const artistSlug = (artistProfile.name || 'artist').toLowerCase().replace(/\s+/g, '');
+
   const [step, setStep] = useState<'select' | 'oauth_flow' | 'success'>('select');
   const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>('instagram');
-  const [handle, setHandle] = useState('@auravanemusic');
+  const [handle, setHandle] = useState(`@${artistSlug}music`);
+  const [followersInput, setFollowersInput] = useState<number>(1250);
   const [customPlatformName, setCustomPlatformName] = useState('');
   const [customProfileUrl, setCustomProfileUrl] = useState('');
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -47,7 +50,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
   > = {
     instagram: {
       name: 'Instagram Graph API',
-      defaultHandle: '@auravanemusic',
+      defaultHandle: `@${artistSlug}music`,
       scopes: [
         'instagram_basic',
         'instagram_manage_insights',
@@ -61,7 +64,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     tiktok: {
       name: 'TikTok for Developers API',
-      defaultHandle: '@aura.vane',
+      defaultHandle: `@${artistSlug}.official`,
       scopes: ['user.info.basic', 'video.list', 'video.insights', 'video.upload'],
       description:
         'TikTok Open Platform OAuth v2. Grants read access to sound analytics, video impressions, and engagement curves.',
@@ -70,7 +73,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     spotify: {
       name: 'Spotify for Artists API',
-      defaultHandle: 'spotify:artist:4Z8t9KqM1',
+      defaultHandle: `spotify:artist:${artistSlug}`,
       scopes: [
         'user-read-email',
         'user-follow-read',
@@ -84,7 +87,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     youtube: {
       name: 'YouTube Data API v3',
-      defaultHandle: '@AuraVaneOfficial',
+      defaultHandle: `@${artistSlug}Official`,
       scopes: [
         'https://www.googleapis.com/auth/youtube.readonly',
         'https://www.googleapis.com/auth/yt-analytics.readonly',
@@ -96,7 +99,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     apple_music: {
       name: 'Apple Music for Artists (MusicKit API)',
-      defaultHandle: 'music.apple.com/artist/aura-vane/159203910',
+      defaultHandle: `music.apple.com/artist/${artistSlug}`,
       scopes: ['music-user-analytics', 'artist-insights-read', 'catalog-read'],
       description:
         'Apple MusicKit Developer Token & OAuth. Fetches plays, milestone badges, Shazam trends, and regional city charts.',
@@ -105,7 +108,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     facebook: {
       name: 'Meta Facebook Pages API',
-      defaultHandle: '@auravanemusic',
+      defaultHandle: `@${artistSlug}music`,
       scopes: ['pages_read_engagement', 'pages_read_user_content', 'pages_show_list'],
       description:
         'Facebook Graph API token for official artist page reach, video views, and tour event RSVP engagement.',
@@ -114,7 +117,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     trends: {
       name: 'Global Sound & Airplay Trends (Chartmetric/Soundcharts)',
-      defaultHandle: 'trend/auravane',
+      defaultHandle: `trend/${artistSlug}`,
       scopes: ['trends:read', 'airplay:read', 'shazam:read', 'radio:monitor'],
       description:
         'Aggregated sound trending radar, viral audio tracking across TikTok/Reels, radio airplay logs, and playlist charting.',
@@ -123,7 +126,7 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
     },
     custom: {
       name: 'Custom Platform / Webhook Connection',
-      defaultHandle: '@artist',
+      defaultHandle: `@${artistSlug}`,
       scopes: ['generic_metrics_read', 'webhook_event_receive'],
       description:
         'Connect any external DSP or social network (SoundCloud, Tidal, Threads, Bandcamp, Twitch) via the generic SocialAccount architecture.',
@@ -157,19 +160,25 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
         ? customProfileUrl || `https://${customPlatformName.toLowerCase()}.com/${handle.replace('@', '')}`
         : `https://${selectedPlatform}.com/${handle.replace('@', '')}`;
 
+    const finalFollowers = Number(followersInput) >= 0 ? Number(followersInput) : 1250;
+    const reach = finalFollowers > 0 ? Math.round(finalFollowers * 2.8) : 0;
+    const views = finalFollowers > 0 ? Math.round(finalFollowers * 4.4) : 0;
+    const engagement = finalFollowers > 0 ? Number((Math.random() * 3 + 4.2).toFixed(1)) : 0;
+    const growthMoM = finalFollowers > 0 ? Number((Math.random() * 12 + 6).toFixed(1)) : 0;
+
     // Store in generic SocialAccount schema
     connectSocialAccount({
       platform: selectedPlatform,
       platformName: platformName,
-      accountName: artistProfile.name,
+      accountName: artistProfile.name || 'Artist Account',
       handle: handle,
       profileUrl: profileUrl,
       scopes: currentSpec.scopes,
-      followers: Math.floor(Math.random() * 80000) + 12000,
-      reach: Math.floor(Math.random() * 250000) + 35000,
-      engagement: Number((Math.random() * 4 + 3).toFixed(1)),
-      views: Math.floor(Math.random() * 400000) + 60000,
-      growthMoM: Number((Math.random() * 15 + 8).toFixed(1)),
+      followers: finalFollowers,
+      reach: reach,
+      engagement: engagement,
+      views: views,
+      growthMoM: growthMoM,
       isCustom: selectedPlatform === 'custom',
     });
 
@@ -267,24 +276,39 @@ export const ConnectAccountModal: React.FC<ConnectAccountModalProps> = ({
                       type="text"
                       value={customProfileUrl}
                       onChange={(e) => setCustomProfileUrl(e.target.value)}
-                      placeholder="https://soundcloud.com/auravane"
+                      placeholder={`https://soundcloud.com/${artistSlug}`}
                       className="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-md text-slate-100 focus:outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
               )}
 
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Artist Profile Handle / Identifier
-                </label>
-                <input
-                  type="text"
-                  value={handle}
-                  onChange={(e) => setHandle(e.target.value)}
-                  className="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-md text-slate-100 focus:outline-none focus:border-cyan-400 font-mono"
-                  placeholder="@handle"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Artist Profile Handle / Identifier
+                  </label>
+                  <input
+                    type="text"
+                    value={handle}
+                    onChange={(e) => setHandle(e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-md text-slate-100 focus:outline-none focus:border-cyan-400 font-mono"
+                    placeholder="@handle"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Current Followers / Listeners (Baseline)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={followersInput}
+                    onChange={(e) => setFollowersInput(Number(e.target.value))}
+                    className="w-full px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-md text-slate-100 focus:outline-none focus:border-cyan-400 font-mono"
+                    placeholder="e.g. 1500 (or 0 for new account)"
+                  />
+                </div>
               </div>
 
               {/* Security info card */}

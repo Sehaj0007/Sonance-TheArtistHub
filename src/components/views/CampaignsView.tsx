@@ -110,13 +110,29 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ onOpenNewCampaignM
 
       {/* Campaigns Detailed List */}
       <div className="space-y-4">
-        {filteredCampaigns.map((camp) => {
-          const spendPct = Math.min(100, Math.round((camp.spend / camp.budget) * 100));
-          return (
-            <div
-              key={camp.id}
-              className="p-5 bg-slate-900/70 border border-slate-800 rounded-xl space-y-4 hover:border-slate-700 transition-colors"
+        {filteredCampaigns.length === 0 ? (
+          <div className="p-12 bg-slate-900/60 border border-dashed border-slate-800 rounded-2xl text-center space-y-3">
+            <Megaphone className="w-10 h-10 text-cyan-400 mx-auto" />
+            <h3 className="text-base font-bold text-slate-100">No Growth Campaigns Active</h3>
+            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+              Launch a structured release campaign to monitor promotional budgets, influencer outreach pipelines, sound seeding, and cost-per-stream return on investment.
+            </p>
+            <button
+              onClick={onOpenNewCampaignModal}
+              className="px-4 py-2 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm"
             >
+              <Plus className="w-4 h-4" />
+              <span>Launch First Campaign</span>
+            </button>
+          </div>
+        ) : (
+          filteredCampaigns.map((camp) => {
+            const spendPct = Math.min(100, Math.round((camp.spend / camp.budget) * 100));
+            return (
+              <div
+                key={camp.id}
+                className="p-5 bg-slate-900/70 border border-slate-800 rounded-xl space-y-4 hover:border-slate-700 transition-colors"
+              >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                 <div>
                   <div className="flex items-center gap-2">
@@ -205,7 +221,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({ onOpenNewCampaignM
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
     </div>
   );

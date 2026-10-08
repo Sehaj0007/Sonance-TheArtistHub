@@ -114,12 +114,28 @@ export const ContentLibraryView: React.FC<ContentLibraryViewProps> = ({
       </div>
 
       {/* Assets Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredAssets.map((asset) => (
-          <div
-            key={asset.id}
-            className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 transition-all flex flex-col justify-between group"
+      {filteredAssets.length === 0 ? (
+        <div className="p-12 bg-slate-900/60 border border-dashed border-slate-800 rounded-2xl text-center space-y-3">
+          <FolderOpen className="w-10 h-10 text-cyan-400 mx-auto" />
+          <h3 className="text-base font-bold text-slate-100">Media Library is Empty</h3>
+          <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+            Upload your master album covers, 9:16 vertical reels, press photography, typography wordmarks, or audio stems to easily attach to content schedules.
+          </p>
+          <button
+            onClick={onOpenNewAssetModal}
+            className="px-4 py-2 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-sm"
           >
+            <Plus className="w-4 h-4" />
+            <span>Upload Your First Asset</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredAssets.map((asset) => (
+            <div
+              key={asset.id}
+              className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 transition-all flex flex-col justify-between group"
+            >
             <div>
               {/* Thumbnail Container */}
               <div className="relative rounded-lg overflow-hidden bg-black/80 aspect-square mb-2.5 border border-slate-800/80">
@@ -195,6 +211,7 @@ export const ContentLibraryView: React.FC<ContentLibraryViewProps> = ({
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 };

@@ -77,26 +77,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 hover:border-slate-700 transition-colors">
             <div className="flex items-center gap-3">
               <img
-                src={artistProfile.avatarUrl}
-                alt={artistProfile.name}
+                src={artistProfile.avatarUrl || '/src/assets/images/artist_press_photo_1791446727519.jpg'}
+                alt={artistProfile.name || 'Artist'}
                 referrerPolicy="no-referrer"
                 className="w-10 h-10 rounded-md object-cover border border-slate-700 shrink-0"
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-slate-100 truncate">
-                    {artistProfile.name}
+                    {artistProfile.name || 'Your Artist Name'}
                   </h2>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </div>
                 <p className="text-xs text-slate-400 truncate">
-                  {artistProfile.genre}
+                  {artistProfile.genre || 'Click to configure'}
                 </p>
               </div>
             </div>
             <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="truncate">Single: {artistProfile.currentSingle}</span>
-              <span className="text-slate-500 font-mono">AWAL</span>
+              <span className="truncate">
+                {artistProfile.currentSingle ? `Single: ${artistProfile.currentSingle}` : 'No active single'}
+              </span>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px]"
+              >
+                Edit Profile
+              </button>
             </div>
           </div>
         </div>

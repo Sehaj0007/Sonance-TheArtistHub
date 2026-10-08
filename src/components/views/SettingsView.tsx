@@ -12,8 +12,15 @@ import {
 import { useArtist } from '../../context/ArtistContext';
 
 export const SettingsView: React.FC = () => {
-  const { artistProfile, updateArtistProfile, resetDemoData, socialAccounts, metrics } =
-    useArtist();
+  const {
+    artistProfile,
+    updateArtistProfile,
+    resetDemoData,
+    startFreshWorkspace,
+    loadSampleData,
+    socialAccounts,
+    metrics,
+  } = useArtist();
 
   const [name, setName] = useState(artistProfile.name);
   const [tagline, setTagline] = useState(artistProfile.tagline);
@@ -192,15 +199,25 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
 
-        <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={resetDemoData}
-            className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset to Clean Demo State</span>
-          </button>
+        <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={startFreshWorkspace}
+              className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Wipe & Start Clean Fresh Workspace</span>
+            </button>
+            <span className="text-slate-600">|</span>
+            <button
+              type="button"
+              onClick={loadSampleData}
+              className="text-xs text-slate-400 hover:text-cyan-400"
+            >
+              Load Sample Demo Template
+            </button>
+          </div>
 
           <button
             type="submit"

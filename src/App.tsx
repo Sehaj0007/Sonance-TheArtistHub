@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArtistProvider, useArtist } from './context/ArtistContext';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -22,9 +22,10 @@ import { NewReleaseModal } from './components/modals/NewReleaseModal';
 import { NewCreatorModal } from './components/modals/NewCreatorModal';
 import { NewAssetModal } from './components/modals/NewAssetModal';
 import { NewCampaignModal, NewPlaylistPitchModal } from './components/modals/NewCampaignModal';
+import { OnboardingModal } from './components/modals/OnboardingModal';
 
 const AppContent: React.FC = () => {
-  const { activeTab } = useArtist();
+  const { activeTab, isOnboarded, artistProfile } = useArtist();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
@@ -34,6 +35,14 @@ const AppContent: React.FC = () => {
   const [isNewAssetModalOpen, setIsNewAssetModalOpen] = useState(false);
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] = useState(false);
   const [isNewPitchModalOpen, setIsNewPitchModalOpen] = useState(false);
+  const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
+
+  // Auto-prompt onboarding wizard on first launch if unconfigured
+  useEffect(() => {
+    if (!isOnboarded && !artistProfile.name) {
+      setIsOnboardingModalOpen(true);
+    }
+  }, [isOnboarded, artistProfile.name]);
 
   const renderActiveView = () => {
     switch (activeTab) {
@@ -42,6 +51,9 @@ const AppContent: React.FC = () => {
           <OverviewView
             onOpenConnectModal={() => setIsConnectModalOpen(true)}
             onOpenNewContentModal={() => setIsNewContentModalOpen(true)}
+            onOpenOnboardingModal={() => setIsOnboardingModalOpen(true)}
+            onOpenNewReleaseModal={() => setIsNewReleaseModalOpen(true)}
+            onOpenNewCampaignModal={() => setIsNewCampaignModalOpen(true)}
           />
         );
       case 'social_accounts':
@@ -100,6 +112,9 @@ const AppContent: React.FC = () => {
           <OverviewView
             onOpenConnectModal={() => setIsConnectModalOpen(true)}
             onOpenNewContentModal={() => setIsNewContentModalOpen(true)}
+            onOpenOnboardingModal={() => setIsOnboardingModalOpen(true)}
+            onOpenNewReleaseModal={() => setIsNewReleaseModalOpen(true)}
+            onOpenNewCampaignModal={() => setIsNewCampaignModalOpen(true)}
           />
         );
     }
@@ -117,6 +132,7 @@ const AppContent: React.FC = () => {
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           onOpenNewContentModal={() => setIsNewContentModalOpen(true)}
           onOpenConnectModal={() => setIsConnectModalOpen(true)}
+          onOpenOnboardingModal={() => setIsOnboardingModalOpen(true)}
         />
 
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
@@ -125,6 +141,11 @@ const AppContent: React.FC = () => {
       </div>
 
       {/* Global Modals */}
+      <OnboardingModal
+        isOpen={isOnboardingModalOpen}
+        onClose={() => setIsOnboardingModalOpen(false)}
+      />
+
       <ConnectAccountModal
         isOpen={isConnectModalOpen}
         onClose={() => setIsConnectModalOpen(false)}

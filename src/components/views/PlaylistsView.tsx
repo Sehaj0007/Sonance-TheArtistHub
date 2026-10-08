@@ -117,12 +117,26 @@ export const PlaylistsView: React.FC<PlaylistsViewProps> = ({ onOpenNewPitchModa
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/80">
-            {filteredPitches.map((pitch) => (
-              <tr key={pitch.id} className="hover:bg-slate-950/60 transition-colors">
-                <td className="py-3 px-3">
-                  <div className="font-semibold text-slate-100 flex items-center gap-1.5">
-                    <span>{pitch.playlistPitched}</span>
-                  </div>
+            {filteredPitches.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="py-12 text-center text-slate-500">
+                  <ListMusic className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                  <p className="text-xs text-slate-400">No playlist pitches logged yet</p>
+                  <button
+                    onClick={onOpenNewPitchModal}
+                    className="mt-2 text-xs font-semibold text-cyan-400 hover:underline inline-block"
+                  >
+                    + Record Your First Playlist Pitch
+                  </button>
+                </td>
+              </tr>
+            ) : (
+              filteredPitches.map((pitch) => (
+                <tr key={pitch.id} className="hover:bg-slate-950/60 transition-colors">
+                  <td className="py-3 px-3">
+                    <div className="font-semibold text-slate-100 flex items-center gap-1.5">
+                      <span>{pitch.playlistPitched}</span>
+                    </div>
                   <span className="text-[10px] font-mono text-cyan-400 uppercase">
                     {pitch.platform}
                   </span>
@@ -156,7 +170,7 @@ export const PlaylistsView: React.FC<PlaylistsViewProps> = ({ onOpenNewPitchModa
                   {pitch.notes}
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
